@@ -1,7 +1,6 @@
 from typing import Any, Self
 from collections import deque
 from statistics import NormalDist  # i love the python stdlib <3
-from math import log
 
 
 class Value:
@@ -23,7 +22,7 @@ class Value:
         self.grader = grader if grader else (lambda arg: None)
 
     def __repr__(self) -> str:
-        return f"Value({self.label or id(self)}, {self.data})"
+        return f"{self.data:.2f}"
 
     @_cast_other
     def __add__(self, other: Self) -> Self:

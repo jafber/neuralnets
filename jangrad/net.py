@@ -14,10 +14,9 @@ class Neuron:
     def __call__(self, inputs: List[Value]) -> Value:
         assert len(inputs) == len(self.weights)
         activation = self.bias
-        # idk why but using sum adds a Value(0.0), so we just do a loop
         for weight, input in zip(self.weights, inputs):
             activation += weight * input
-        return activation.relu() if self.nonlin else activation
+        return activation.gelu() if self.nonlin else activation
 
     def params(self) -> List[Value]:
         return self.weights + [self.bias]
@@ -64,9 +63,11 @@ class MLP:
         assert len(input) == self.n_inputs
         output = self(input)
         assert len(desired) == len(output)
-        return sum(
+        l = sum(
             [(out_val - des_val) ** 2 for out_val, des_val in zip(output, desired)]
         )
+        # print(f'{input} -> {output}, desired {desired}, {l} loss')
+        return l
 
     def params(self) -> List[Value]:
         return [param for layer in self.layers for param in layer.params()]
@@ -76,6 +77,7 @@ class MLP:
         total_loss = sum(
             [self.loss(input, desired) for input, desired in zip(ins, outs)]
         )
+        # print(f'total loss was {total_loss}')
         total_loss.backward()
         for param in self.params():
             # param.grad points in the direction of increased loss
